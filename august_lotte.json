@@ -1,0 +1,619 @@
+{
+    "code": 200,
+    "success": true,
+    "result": {
+        "month": 8,
+        "today": "2025-10-17",
+        "selectedDate": "2025-08-01",
+        "dayOfPrevMonth": "2025-07-31",
+        "dayOfNextMonth": "2025-09-02",
+        "beforeDate": null,
+        "beforeGameId": "",
+        "afterDate": null,
+        "afterGameId": "",
+        "scheduleRecentDate": "2025-09-30",
+        "scheduleRecentGameId": "",
+        "years": [
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+        ],
+        "dates": [
+            {
+                "ymd": "2025-08-01",
+                "dayOfWeek": "금",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250801LTWO02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250801LTWO02025",
+                        "homeTeamCode": "WO",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-02",
+                "dayOfWeek": "토",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250802LTWO02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250802LTWO02025",
+                        "homeTeamCode": "WO",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-03",
+                "dayOfWeek": "일",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250803LTWO02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250803LTWO02025",
+                        "homeTeamCode": "WO",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-04",
+                "dayOfWeek": "월",
+                "contentsCount": 0,
+                "additional": null,
+                "gameCount": 0,
+                "gameIds": [],
+                "gameInfos": null,
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-05",
+                "dayOfWeek": "화",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250805HTLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250805HTLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "HT",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-06",
+                "dayOfWeek": "수",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250806HTLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250806HTLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "HT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-07",
+                "dayOfWeek": "목",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250807HTLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250807HTLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "HT",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-08",
+                "dayOfWeek": "금",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250808SKLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250808SKLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "SK",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-09",
+                "dayOfWeek": "토",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250809SKLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250809SKLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "SK",
+                        "statusCode": "BEFORE",
+                        "winner": "DRAW"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-10",
+                "dayOfWeek": "일",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250810SKLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250810SKLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "SK",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-11",
+                "dayOfWeek": "월",
+                "contentsCount": 0,
+                "additional": null,
+                "gameCount": 0,
+                "gameIds": [],
+                "gameInfos": null,
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-12",
+                "dayOfWeek": "화",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250812LTHH02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250812LTHH02025",
+                        "homeTeamCode": "HH",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-13",
+                "dayOfWeek": "수",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250813LTHH02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250813LTHH02025",
+                        "homeTeamCode": "HH",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-14",
+                "dayOfWeek": "목",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250814LTHH02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250814LTHH02025",
+                        "homeTeamCode": "HH",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-15",
+                "dayOfWeek": "금",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250815SSLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250815SSLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "SS",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-16",
+                "dayOfWeek": "토",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250816SSLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250816SSLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "SS",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-17",
+                "dayOfWeek": "일",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250817SSLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250817SSLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "SS",
+                        "statusCode": "RESULT",
+                        "winner": "DRAW"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-18",
+                "dayOfWeek": "월",
+                "contentsCount": 0,
+                "additional": null,
+                "gameCount": 0,
+                "gameIds": [],
+                "gameInfos": null,
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-19",
+                "dayOfWeek": "화",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250819LTLG02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250819LTLG02025",
+                        "homeTeamCode": "LG",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-20",
+                "dayOfWeek": "수",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250820LTLG02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250820LTLG02025",
+                        "homeTeamCode": "LG",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-21",
+                "dayOfWeek": "목",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250821LTLG02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250821LTLG02025",
+                        "homeTeamCode": "LG",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "DRAW"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-22",
+                "dayOfWeek": "금",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250822LTNC02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250822LTNC02025",
+                        "homeTeamCode": "NC",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-23",
+                "dayOfWeek": "토",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250823LTNC02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250823LTNC02025",
+                        "homeTeamCode": "NC",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-24",
+                "dayOfWeek": "일",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250824LTNC02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250824LTNC02025",
+                        "homeTeamCode": "NC",
+                        "awayTeamCode": "LT",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-25",
+                "dayOfWeek": "월",
+                "contentsCount": 0,
+                "additional": null,
+                "gameCount": 0,
+                "gameIds": [],
+                "gameInfos": null,
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-26",
+                "dayOfWeek": "화",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250826KTLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250826KTLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "KT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-27",
+                "dayOfWeek": "수",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250827KTLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250827KTLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "KT",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-28",
+                "dayOfWeek": "목",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250828KTLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250828KTLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "KT",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-29",
+                "dayOfWeek": "금",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250829OBLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250829OBLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "OB",
+                        "statusCode": "RESULT",
+                        "winner": "AWAY"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-30",
+                "dayOfWeek": "토",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250830OBLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250830OBLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "OB",
+                        "statusCode": "RESULT",
+                        "winner": "DRAW"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            },
+            {
+                "ymd": "2025-08-31",
+                "dayOfWeek": "일",
+                "contentsCount": 1,
+                "additional": null,
+                "gameCount": 1,
+                "gameIds": [
+                    "20250831OBLT02025"
+                ],
+                "gameInfos": [
+                    {
+                        "gameId": "20250831OBLT02025",
+                        "homeTeamCode": "LT",
+                        "awayTeamCode": "OB",
+                        "statusCode": "RESULT",
+                        "winner": "HOME"
+                    }
+                ],
+                "isKoreaGameExisted": false
+            }
+        ]
+    }
+}
