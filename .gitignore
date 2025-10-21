@@ -11,6 +11,8 @@ __pycache__/
 /pitch_processed
 /pitch_raw
 
+/web/public
+
 # Data files (if not intended for version control)
 #*.csv
 #*.json
