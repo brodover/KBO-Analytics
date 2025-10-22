@@ -1,4 +1,19 @@
-<div class="chart-wrapper">
-    <h2>KBO Pitch Location Analysis</h2>
-    <div #chartContainer>Loading visualization...</div>
+<div class="controls">
+  <label>Player Type:</label>
+  <div class="radio-group">
+    <input type="radio" id="batter" value="batters" name="playerType"
+           [(ngModel)]="playerType" (change)="loadChart()">
+    <label for="batter">Batter</label>
+
+    <input type="radio" id="pitcher" value="pitchers" name="playerType"
+           [(ngModel)]="playerType" (change)="loadChart()">
+    <label for="pitcher">Pitcher</label>
+  </div>
+
+  <label for="opponentTeam">Opponent Team:</label>
+  <select id="opponentTeam" [(ngModel)]="opponentTeam" (change)="loadChart()">
+    <option *ngFor="let team of opponentTeams" [value]="team">{{ team }}</option>
+  </select>
 </div>
+
+<div id="vega-chart-container"></div>
