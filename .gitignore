@@ -8,8 +8,9 @@
 __pycache__/
 *.pyc
 
-/pitch_processed
 /pitch_raw
+/pitch_processed
+final_processed/
 
 /web/public
 
