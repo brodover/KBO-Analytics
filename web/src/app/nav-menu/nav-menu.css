@@ -1,0 +1,29 @@
+.main-nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: #333; /* Dark background */
+  overflow: hidden;
+}
+
+.main-nav li {
+  float: left;
+}
+
+.main-nav a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Style the links on hover */
+.main-nav a:hover {
+  background-color: #555;
+}
+
+/* Style the active link (the page the user is currently on) */
+.main-nav a.active-link {
+  background-color: #04AA6D; /* A nice highlight color */
+}
