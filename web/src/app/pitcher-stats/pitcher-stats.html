@@ -14,54 +14,46 @@
   </div>
 
   <table class="data-table">
-    <thead>
-      <tr>
-        <th rowspan="2">Pitcher Team</th>
-        <th rowspan="2">Opponent Team</th>
-        <th rowspan="2">Pitcher Name</th>
-        <th rowspan="2">Pitch Type</th>
-        <th colspan="6" class="stretch-header">Stretch (Runners On)</th>
-        <th colspan="6" class="windup-header">Windup (Bases Empty)</th>
-      </tr>
-      <tr>
-        <th>Pitches</th>
-        <th>Swings</th>
-        <th>Whiffs</th>
-        <th>Contact</th>
-        <th>Whiff Rate</th>
-        <th>Contact Rate</th>
-        
-        <th>Pitches</th>
-        <th>Swings</th>
-        <th>Whiffs</th>
-        <th>Contact</th>
-        <th>Whiff Rate</th>
-        <th>Contact Rate</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let stat of filteredStats">
-        <td>{{ stat.pitcher_team_code }}</td>
-        <td>{{ stat.batter_team_code }}</td>
-        <td>{{ stat.pitcher_name }}</td>
-        <td>{{ stat.pitch_type }}</td>
-        
-        <td>{{ stat['total_pitches (stretch)'] | number: '1.0-0' }}</td>
-        <td>{{ stat['total_swings (stretch)'] | number: '1.0-0' }}</td>
-        <td>{{ stat['whiffs (stretch)'] | number: '1.0-0' }}</td>
-        <td>{{ stat['contacts (stretch)'] | number: '1.0-0' }}</td>
-        <td class="rate-column">{{ stat['whiff_rate (stretch)'] | percent: '1.1-1' }}</td>
-        <td class="rate-column">{{ stat['contact_rate (stretch)'] | percent: '1.1-1' }}</td>
+  <thead>
+    <tr>
+      <th rowspan="2">Pitcher Team</th>
+      <th rowspan="2">Opponent Team</th>
+      <th rowspan="2">Pitcher Name</th>
+      <th rowspan="2">Pitch Type</th>
+      <th colspan="4" class="windup-header">Windup (Bases Empty)</th> 
+      <th colspan="4" class="stretch-header">Stretch (Runners On)</th> 
+    </tr>
+    <tr>
+      <th>Pitches</th>
+      <th>Swing Rate</th>
+      <th>Whiff Rate</th>
+      <th>Contact Rate</th>
+      
+      <th>Pitches</th>
+      <th>Swing Rate</th>
+      <th>Whiff Rate</th>
+      <th>Contact Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let stat of filteredStats">
+      <td>{{ stat.pitcher_team_code }}</td>
+      <td>{{ stat.batter_team_code }}</td>
+      <td>{{ stat.pitcher_name }}</td>
+      <td>{{ stat.pitch_type }}</td>
+      
+      <td>{{ stat['pitches (windup)'] | number: '1.0-0' }}</td>
+      <td class="rate-column">{{ stat['swing rate (windup)'] | percent: '1.1-1' }}</td>
+      <td class="rate-column">{{ stat['whiff rate (windup)'] | percent: '1.1-1' }}</td>
+      <td class="rate-column">{{ stat['contact rate (windup)'] | percent: '1.1-1' }}</td>
 
-        <td>{{ stat['total_pitches (windup)'] | number: '1.0-0' }}</td>
-        <td>{{ stat['total_swings (windup)'] | number: '1.0-0' }}</td>
-        <td>{{ stat['whiffs (windup)'] | number: '1.0-0' }}</td>
-        <td>{{ stat['contacts (windup)'] | number: '1.0-0' }}</td>
-        <td class="rate-column">{{ stat['whiff_rate (windup)'] | percent: '1.1-1' }}</td>
-        <td class="rate-column">{{ stat['contact_rate (windup)'] | percent: '1.1-1' }}</td>
-      </tr>
-    </tbody>
-  </table>
+      <td>{{ stat['pitches (stretch)'] | number: '1.0-0' }}</td>
+      <td class="rate-column">{{ stat['swing rate (stretch)'] | percent: '1.1-1' }}</td>
+      <td class="rate-column">{{ stat['whiff rate (stretch)'] | percent: '1.1-1' }}</td>
+      <td class="rate-column">{{ stat['contact rate (stretch)'] | percent: '1.1-1' }}</td>
+    </tr>
+  </tbody>
+</table>
   
   <div *ngIf="!filteredStats.length">
     No data found for the selected filters.

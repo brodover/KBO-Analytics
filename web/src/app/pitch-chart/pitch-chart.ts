@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as vegaEmbed from 'vega-embed';
+import { isPlatformBrowser } from '@angular/common';
 
 const CHART_SPEC_PATH = 'assets/20250322LTLG02025_plate_discipline.json'; 
 
@@ -26,7 +27,7 @@ export class PitchChart implements  AfterViewInit {
   // List of opponent team abbreviations from your file names
   opponentTeams: string[] = ['HH', 'HT', 'KT', 'LG', 'NC', 'OB', 'SK', 'SS', 'WO']; 
 
-  constructor(private el: ElementRef, private http: HttpClient) { }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private el: ElementRef, private http: HttpClient) { }
 
   ngAfterViewInit(): void {
     this.loadChart();
@@ -36,26 +37,30 @@ export class PitchChart implements  AfterViewInit {
    * Constructs the filename and fetches/renders the Altair chart.
    */
   loadChart(): void {
-    // 1. Construct the filename based on current selections
-    // e.g., 'LT_batters_vs_HH_discipline.json'
-    const filename = `LT_${this.playerType}_vs_${this.opponentTeam}_discipline.json`;
-    
-    // The full path relative to your assets folder
-    const chartUrl = `assets/${filename}`; 
+    if (isPlatformBrowser(this.platformId)) {
+      // 1. Construct the filename based on current selections
+      // e.g., 'LT_batters_vs_HH_discipline.json'
+      const filename = `LT_${this.playerType}_vs_${this.opponentTeam}_discipline.json`;
+      
+      // The full path relative to your assets folder
+      const chartUrl = `assets/${filename}`; 
 
-    console.log('Attempting to load chart:', chartUrl);
+      console.log('Attempting to load chart:', chartUrl);
 
-    // 2. Fetch the Altair/Vega-Lite JSON specification
-    this.http.get(chartUrl).subscribe({
-      next: (data: any) => {
-        // 3. Render the chart (Replace this with your actual rendering logic)
-        this.renderChart(data); 
-      },
-      error: (err) => {
-        console.error('Failed to load chart JSON:', err);
-        // Optional: Display an error message to the user
-      }
-    });
+      // 2. Fetch the Altair/Vega-Lite JSON specification
+      this.http.get(chartUrl).subscribe({
+        next: (data: any) => {
+          // 3. Render the chart (Replace this with your actual rendering logic)
+          this.renderChart(data); 
+        },
+        error: (err) => {
+          console.error('Failed to load chart JSON:', err);
+          // Optional: Display an error message to the user
+        }
+      });
+    } else {
+      console.log('Skipping Vega-Embed execution on the server side.');
+    }
   }
 
   /**

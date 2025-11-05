@@ -1,19 +1,21 @@
-<div class="controls">
-  <label>LT Player Type:</label>
-  <div class="radio-group">
-    <input type="radio" id="batter" value="batters" name="playerType"
-           [(ngModel)]="playerType" (change)="loadChart()">
-    <label for="batter">Batter</label>
+<div #chartContainer>
+  <div class="controls">
+    <label>LT Player Type:</label>
+    <div class="radio-group">
+      <input type="radio" id="batter" value="batters" name="playerType"
+            [(ngModel)]="playerType" (change)="loadChart()">
+      <label for="batter">Batter</label>
 
-    <input type="radio" id="pitcher" value="pitchers" name="playerType"
-           [(ngModel)]="playerType" (change)="loadChart()">
-    <label for="pitcher">Pitcher</label>
+      <input type="radio" id="pitcher" value="pitchers" name="playerType"
+            [(ngModel)]="playerType" (change)="loadChart()">
+      <label for="pitcher">Pitcher</label>
+    </div>
+
+    <label for="opponentTeam">Opponent Team:</label>
+    <select id="opponentTeam" [(ngModel)]="opponentTeam" (change)="loadChart()">
+      <option *ngFor="let team of opponentTeams" [value]="team">{{ team }}</option>
+    </select>
   </div>
 
-  <label for="opponentTeam">Opponent Team:</label>
-  <select id="opponentTeam" [(ngModel)]="opponentTeam" (change)="loadChart()">
-    <option *ngFor="let team of opponentTeams" [value]="team">{{ team }}</option>
-  </select>
+  <div id="vega-chart-container"></div>
 </div>
-
-<div id="vega-chart-container"></div>
