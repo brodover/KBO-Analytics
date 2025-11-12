@@ -15,24 +15,19 @@ import { StrikeZoneData } from '../interfaces/strike-zone-data';
     ],
 })
 
-
-
 export class PitchChart implements AfterViewInit {
+    private strikeZoneData: StrikeZoneData[] = [];
+    private pitchData: any = null;
+    private vegaView: any = null;
+
     // Use @ViewChild to get a reference to the HTML div container
     @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
 
-    private vegaView: any = null;
-    private loadedChartSpec: any = null;
-
-    private baseZoneDataName = "";
-    private dynamicZoneDataName = "";
-
-    // Assume you have a batter selection (dropdown) bound to this
     selectedBatter: string = 'ALL';
     selectedPitcher: string = 'ALL';
 
-    // State for Dynamic Strike Zone Data
-    strikeZoneData: StrikeZoneData[] = [];
+    baseZoneName: string | undefined = '';
+    dynamicZoneName: string | undefined = '';
 
     // Base Zone coordinates (for the team/opponent team average)
     currentBaseZoneTop: number = 3.4;
@@ -42,17 +37,9 @@ export class PitchChart implements AfterViewInit {
     currentDynamicZoneTop: number = 3.4;
     currentDynamicZoneBtm: number = 1.6;
 
-    // Constants for pixel conversion (based on your chart generation)
-    // Total Y range in feet (from 0.0 to 5.0, matching the chart's Y-scale domain)
-    private readonly CHART_Y_RANGE_FT = 5.0;
-    // Total chart height in pixels (matches the HEIGHT=760 in your Python script)
-    private readonly CHART_PIXEL_HEIGHT = 760;
-
     // State variables for the selections
     playerType: 'batters' | 'pitchers' = 'batters'; // Default to batters
     opponentTeam: string = 'HH'; // Default to the first team
-
-    // List of opponent team abbreviations from your file names
     opponentTeams: string[] = ['HH', 'HT', 'KT', 'LG', 'NC', 'OB', 'SK', 'SS', 'WO'];
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object, private el: ElementRef, private http: HttpClient) { }
@@ -92,29 +79,13 @@ export class PitchChart implements AfterViewInit {
             const filename = `LT_${this.playerType}_vs_${this.opponentTeam}_discipline.json`;
             const chartUrl = `assets/${filename}`;
 
-            console.log('Attempting to load chart:', chartUrl);
+            console.log('>>> Attempting to load chart:', chartUrl);
 
             // 2. Fetch the Altair/Vega-Lite JSON specification
             this.http.get(chartUrl).subscribe({
                 next: (data: any) => {
-                    this.loadedChartSpec = data; // <-- Store the spec
-
-                    let pitchData: any[] = [];
-
-                    // --- Data Extraction Logic ---
-                    const firstLayer = data.layer && data.layer[0];
-
-                    if (firstLayer && firstLayer.data && firstLayer.data.name && data.datasets) {
-                        // Case 1: Data is referenced by name (common in layered Altair charts)
-                        const dataName = firstLayer.data.name;
-                        pitchData = data.datasets[dataName];
-                    } else if (data.data && data.data.values) {
-                        // Case 2: Data is inline (standard single chart)
-                        pitchData = data.data.values;
-                    }
-
-                    this.updateStrikeZone();
-                    this.renderChart(this.loadedChartSpec);
+                    this.pitchData = data; // <-- Store the spec
+                    this.renderChart();
                 },
                 error: (err) => {
                     console.error('Failed to load chart JSON:', err);
@@ -128,92 +99,25 @@ export class PitchChart implements AfterViewInit {
     /**
      * Renders the Vega-Lite/Altair specification after injecting dynamic data.
      */
-    renderChart(vegaSpec: any): void {
+    renderChart(): void {
+        this.updateStrikeZone();
+
+        if (!this.pitchData)
+            return;
+        
         const container = this.el.nativeElement.querySelector('#vega-chart-container');
         if (container) {
-            console.log('renderChart');
-            const updatedSpec = this.injectStrikeZoneCoordinates(vegaSpec);
+            const updatedPitchData = this.injectStrikeZoneCoordinates(this.pitchData);
 
             container.innerHTML = '';
-            vegaEmbed.default(container, updatedSpec, { actions: false })
+            vegaEmbed.default(container, updatedPitchData, { actions: false })
                 .then(result => {
                     this.vegaView = result.view;
-
                     this.setupVegaListeners();
-
-                    console.log('Chart rendered.');
+                    console.log('>>> Chart rendered.');
                 })
                 .catch(console.error);
         }
-    }
-
-    /**
-     * Overwrites the strike zone data arrays for both the base and dynamic layers by
-     * modifying the coordinates inside the top-level 'datasets' object.
-     */
-    injectStrikeZoneCoordinates(spec: any): any {
-        let baseDataName: string | undefined;
-        let dynamicDataName: string | undefined;
-
-        // Reset names on each load
-        this.baseZoneDataName = '';
-        this.dynamicZoneDataName = '';
-
-        // 1. Identify the data names associated with the strike zone layers
-        if (spec.layer && Array.isArray(spec.layer)) {
-            for (const layer of spec.layer) {
-                // Check if it's a rect mark and has a data name
-                if (layer.mark && layer.mark.type === 'rect' && layer.data && layer.data.name) {
-
-                    // Base Zone is the gray one, Dynamic Zone is the red one
-                    if (layer.mark.stroke === 'gray' && !baseDataName) {
-                        baseDataName = layer.data.name;
-                        this.baseZoneDataName = baseDataName!;
-                    } else if (layer.mark.stroke === 'red' && !dynamicDataName) {
-                        dynamicDataName = layer.data.name;
-                        this.dynamicZoneDataName = dynamicDataName!;
-                    }
-                }
-            }
-        }
-
-        // 2. Modify the data inside the top-level 'datasets' object
-        // Note: spec.datasets is where Altair places the named data arrays.
-
-        let baseZoneModified = false;
-        let dynamicZoneModified = false;
-
-        if (spec.datasets) {
-
-            // Modify Base Zone Data
-            if (baseDataName && Array.isArray(spec.datasets[baseDataName])) {
-                const baseLayerData = spec.datasets[baseDataName];
-                if (baseLayerData.length > 0) {
-                    // The strike zone data should only have one row
-                    baseLayerData[0].y = this.currentBaseZoneBtm;
-                    baseLayerData[0].y2 = this.currentBaseZoneTop;
-                    baseZoneModified = true;
-                }
-            }
-
-            // Modify Dynamic Zone Data
-            if (dynamicDataName && Array.isArray(spec.datasets[dynamicDataName])) {
-                const dynamicLayerData = spec.datasets[dynamicDataName];
-                if (dynamicLayerData.length > 0) {
-                    // The strike zone data should only have one row
-                    dynamicLayerData[0].y = this.currentDynamicZoneBtm;
-                    dynamicLayerData[0].y2 = this.currentDynamicZoneTop;
-                    dynamicZoneModified = true;
-                }
-            }
-        }
-
-        // 3. Final status check
-        if (!baseZoneModified || !dynamicZoneModified) {
-            console.warn('⚠️ WARNING: Could not modify data for both strike zone layers. Check JSON for "datasets" property.');
-        }
-
-        return spec;
     }
 
     /**
@@ -276,6 +180,68 @@ export class PitchChart implements AfterViewInit {
     }
 
     /**
+     * Overwrites the strike zone data arrays for both the base and dynamic layers by
+     * modifying the coordinates inside the top-level 'datasets' object.
+     */
+    injectStrikeZoneCoordinates(pitchData: any): any {
+        // 1. Identify the data names associated with the strike zone layers
+        if (pitchData.layer && Array.isArray(pitchData.layer)) {
+            for (const layer of pitchData.layer) {
+                // Check if it's a rect mark and has a data name
+                if (layer.mark && layer.mark.type === 'rect' && layer.data && layer.data.name) {
+
+                    // Base Zone is the gray one, Dynamic Zone is the red one
+                    if (layer.mark.stroke === 'gray' && !this.baseZoneName) {
+                        this.baseZoneName = layer.data.name;
+                    } else if (layer.mark.stroke === 'red' && !this.dynamicZoneName) {
+                        this.dynamicZoneName = layer.data.name;
+                    }
+
+                    if (this.baseZoneName && this.dynamicZoneName) {
+                        break; // Both names found
+                    }
+                }
+            }
+        }
+
+        // 2. Modify the data inside the top-level 'datasets' object
+        // Note: spec.datasets is where Altair places the named data arrays.
+        let baseZoneModified = false;
+        let dynamicZoneModified = false;
+
+        if (pitchData.datasets) {
+            // Modify Base Zone Data
+            if (this.baseZoneName && Array.isArray(pitchData.datasets[this.baseZoneName])) {
+                const baseLayerData = pitchData.datasets[this.baseZoneName];
+                if (baseLayerData.length > 0) {
+                    // The strike zone data should only have one row
+                    baseLayerData[0].y = this.currentBaseZoneBtm;
+                    baseLayerData[0].y2 = this.currentBaseZoneTop;
+                    baseZoneModified = true;
+                }
+            }
+
+            // Modify Dynamic Zone Data
+            if (this.dynamicZoneName && Array.isArray(pitchData.datasets[this.dynamicZoneName])) {
+                const dynamicLayerData = pitchData.datasets[this.dynamicZoneName];
+                if (dynamicLayerData.length > 0) {
+                    // The strike zone data should only have one row
+                    dynamicLayerData[0].y = this.currentDynamicZoneBtm;
+                    dynamicLayerData[0].y2 = this.currentDynamicZoneTop;
+                    dynamicZoneModified = true;
+                }
+            }
+        }
+
+        // 3. Final status check
+        if (!baseZoneModified || !dynamicZoneModified) {
+            console.warn('⚠️ WARNING: Could not modify data for both strike zone layers. Check JSON for "datasets" property.');
+        }
+
+        return pitchData;
+    }
+
+    /**
      * Attaches signal listeners to the active Vega view.
      */
     setupVegaListeners(): void {
@@ -306,17 +272,84 @@ export class PitchChart implements AfterViewInit {
      * 2. Recalculates strike zone.
      * 3. Pushes new coordinates back into Vega.
      */
+    /**
+     * Reacts to a batter selection change from the Vega dropdown.
+     */
     reactToBatterChange(batterName: string): void {
         // 1. Update Angular's state
         this.selectedBatter = batterName;
 
-        // 2. Recalculate strike zone coordinates
-        // This will update this.currentBaseZoneTop/Btm and this.currentDynamicZoneTop/Btm
-        this.updateStrikeZone();
-        if (this.loadedChartSpec) {
-            this.renderChart(this.loadedChartSpec);
-        }
+        this.vegaView.runAfter(() => {
+            // 2. Recalculate strike zone coordinates (updates this.currentDynamicZoneTop/Btm, etc.)
+            this.updateStrikeZone();
 
+            // 3. PUSH NEW COORDINATES TO VEGA using direct data access
+            if (!this.vegaView || !this.baseZoneName || !this.dynamicZoneName) {
+                console.warn('Vega view or zone data names not ready. Cannot push strike zone update.');
+                return;
+            }
+
+            // // --- Direct Data Modification ---
+
+            // // A. Get the Base Zone data array
+            // const baseData = this.vegaView.data(this.baseZoneName);
+            // if (baseData && baseData.length > 0) {
+            //     // Modify the properties of the first (and only) datum in the array
+            //     baseData[0].y = this.currentBaseZoneBtm;
+            //     baseData[0].y2 = this.currentBaseZoneTop;
+            // }
+
+            // // B. Get the Dynamic Zone data array
+            // const dynamicData = this.vegaView.data(this.dynamicZoneName);
+            // if (dynamicData && dynamicData.length > 0) {
+            //     // Modify the properties of the first (and only) datum in the array
+            //     dynamicData[0].y = this.currentDynamicZoneBtm;
+            //     dynamicData[0].y2 = this.currentDynamicZoneTop;
+            // }
+
+            // // 4. Tell Vega to re-render the view with the modified data
+            // this.vegaView.runAsync();
+
+            // Access the changeset utility (still necessary to avoid the TypeScript error)
+            const vegaChangeset: any = vegaEmbed.vega.changeset; 
+
+            // --- Dynamic Zone Update (Remove old, Insert new is the most reliable method) ---
+            const dynamicDatum = {
+                id: 'dynamic_zone', 
+                x: -0.708, x2: 0.708, 
+                y: this.currentDynamicZoneBtm, 
+                y2: this.currentDynamicZoneTop 
+            };
+            const dynamicChanges = vegaChangeset()
+                .remove((d: any) => d.id === 'dynamic_zone') 
+                .insert(dynamicDatum);                       
+            
+            // --- Base Zone Update ---
+            const baseDatum = {
+                id: 'base_zone', 
+                x: -0.708, x2: 0.708,
+                y: this.currentBaseZoneBtm, 
+                y2: this.currentBaseZoneTop 
+            };
+            const baseChanges = vegaChangeset()
+                .remove((d: any) => d.id === 'base_zone') 
+                .insert(baseDatum);                      
+
+            // 3. Apply the changes using the reliable synchronous 'run()' or 'runAsync()'.
+            // Since we are inside runAfter(), using synchronous 'run()' is often fine here,
+            // but sticking with 'runAsync()' to be cautious is safer.
+
+            this.vegaView.change(this.dynamicZoneName, dynamicChanges).runAsync()
+                .then(() => {
+                    // Chain the second change to ensure sequential execution
+                    return this.vegaView.change(this.baseZoneName, baseChanges).runAsync();
+                })
+                .then(() => {
+                    console.log(`Pushed strike zone update for ${batterName}.`);
+                })
+                .catch(console.error); 
+        });
+    
         console.log(`Pushed strike zone update for ${batterName}: [${this.currentDynamicZoneBtm}, ${this.currentDynamicZoneTop}]`);
     }
 
@@ -333,9 +366,7 @@ export class PitchChart implements AfterViewInit {
         try {
             const currentState = this.vegaView.getState();
 
-            // This log is the one we need to analyze!
             console.log('[FINAL DEBUG] Vega Internal State (Manual Check):', currentState);
-
             console.log('--- Selector Values ---');
             console.log(`BatterSelector Value:`, currentState.signals?.BatterSelector || currentState.data?.BatterSelector);
             console.log(`PitcherSelector Value:`, currentState.signals?.PitcherSelector || currentState.data?.PitcherSelector);
@@ -343,5 +374,7 @@ export class PitchChart implements AfterViewInit {
         } catch (e) {
             console.error('Error reading Vega state:', e);
         }
+
+        this.vegaView.run();
     }
 }
