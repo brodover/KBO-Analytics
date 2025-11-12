@@ -1,45 +1,20 @@
 <div #chartContainer>
-  <div class="controls">
-    <label>LT Player Type:</label>
-    <div class="radio-group">
-      <input type="radio" id="batter" value="batters" name="playerType"
-          [(ngModel)]="playerType" (change)="loadChart()">
-      <label for="batter">Batter</label>
-
-      <input type="radio" id="pitcher" value="pitchers" name="playerType"
-          [(ngModel)]="playerType" (change)="loadChart()">
+  <div class="controls"><label>LT Player Type:</label>
+    <div class="radio-group"><input type="radio" id="batter" value="batters" name="playerType" [(ngModel)]="playerType"
+        (change)="loadChart()"><label for="batter">Batter</label> <input type="radio" id="pitcher" value="pitchers"
+        name="playerType" [(ngModel)]="playerType" (change)="loadChart()">
       <label for="pitcher">Pitcher</label>
     </div>
 
-    <label for="opponentTeam">Opponent Team:  </label>
+    <label for="opponentTeam">Opponent Team: </label>
     <select id="opponentTeam" [(ngModel)]="opponentTeam" (change)="loadChart()">
-      <option *ngFor="let team of opponentTeams" [value]="team">{{ team }}</option>
+      @for (team of opponentTeams; track team) {
+      <option [value]="team">{{ team }}</option>
+      }
     </select>
   </div>
-  
-  <label for="batter-select">Batter:  </label>
-  <select id="batter-select" 
-      [(ngModel)]="selectedBatter" 
-      (ngModelChange)="onBatterChange($event)">
-    
-    <option value="All">All Batters (Team Avg)</option>
-    <option *ngFor="let name of batterNames" [value]="name">{{ name }}</option>
-  </select>
-  <br/>
-  <label for="pitcher-select">Pitcher:  </label>
-  <select id="pitcher-select" 
-      [(ngModel)]="selectedPitcher" 
-      (ngModelChange)="onPitcherChange($event)">
-    
-    <option value="All">All Pitchers (Team Avg)</option>
-    <option *ngFor="let name of opponentPitchers" [value]="name">{{ name }}</option>
-  </select>
 
   <div id="vega-chart-container"></div>
-  
-  <div class="debug-controls">
-      <button (click)="printCurrentVegaState()">
-          Print Vega Filter State
-      </button>
-  </div>
 </div>
+
+<div class="debug-controls"><button (click)="printCurrentVegaState()">Print Vega Filter State</button></div>
