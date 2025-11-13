@@ -23,11 +23,19 @@ export class PitchChart implements AfterViewInit {
     // Use @ViewChild to get a reference to the HTML div container
     @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
 
-    selectedBatter: string = 'ALL';
-    selectedPitcher: string = 'ALL';
+    private selectedBatter: string = 'ALL';
+    private selectedPitcher: string = 'ALL';
 
-    baseZoneName: string | undefined = '';
-    dynamicZoneName: string | undefined = '';
+    private baseZoneName: string | undefined = '';
+    private dynamicZoneName: string | undefined = '';
+    private verticalGridDataName: string | undefined = '';
+    private horizontalGridDataName: string | undefined = '';
+
+    currentGridX1: number = 0;
+    currentGridX2: number = 0;
+
+    currentGridY1: number = 0;
+    currentGridY2: number = 0;
 
     // Base Zone coordinates (for the team/opponent team average)
     currentBaseZoneTop: number = 3.4;
@@ -177,6 +185,13 @@ export class PitchChart implements AfterViewInit {
             this.currentDynamicZoneTop = 0.0;
             this.currentDynamicZoneBtm = 0.0;
         }
+
+        const szHeight = this.currentDynamicZoneTop - this.currentDynamicZoneBtm;
+        const szThirdY = szHeight / 3.0;
+
+        // Calculate the new 1/3 and 2/3 horizontal grid line heights
+        this.currentGridY1 = this.currentDynamicZoneBtm + szThirdY;
+        this.currentGridY2 = this.currentDynamicZoneBtm + (2 * szThirdY);
     }
 
     /**
@@ -233,6 +248,28 @@ export class PitchChart implements AfterViewInit {
             }
         }
 
+        const verticalGridDataName = Object.keys(pitchData.datasets).find(name => {
+            const data = pitchData.datasets[name];
+            return Array.isArray(data) && 
+                data.length > 0 && 
+                data.some(d => d.id === 'vertical_grid_1' || d.id === 'vertical_grid_2');
+        });
+
+        if (verticalGridDataName) {
+            this.verticalGridDataName = verticalGridDataName;
+        }
+
+        const horizontalGridDataName = Object.keys(pitchData.datasets).find(name => {
+            const data = pitchData.datasets[name];
+            return Array.isArray(data) && 
+                data.length > 0 && 
+                data.some(d => d.id === 'horizontal_grid_1' || d.id === 'horizontal_grid_2');
+        });
+
+        if (horizontalGridDataName) {
+            this.horizontalGridDataName = horizontalGridDataName;
+        }
+
         // 3. Final status check
         if (!baseZoneModified || !dynamicZoneModified) {
             console.warn('⚠️ WARNING: Could not modify data for both strike zone layers. Check JSON for "datasets" property.');
@@ -279,76 +316,67 @@ export class PitchChart implements AfterViewInit {
         // 1. Update Angular's state
         this.selectedBatter = batterName;
 
-        this.vegaView.runAfter(() => {
-            // 2. Recalculate strike zone coordinates (updates this.currentDynamicZoneTop/Btm, etc.)
-            this.updateStrikeZone();
+        // 2. Recalculate strike zone coordinates (updates this.currentDynamicZoneTop/Btm, etc.)
+        this.updateStrikeZone();
 
-            // 3. PUSH NEW COORDINATES TO VEGA using direct data access
-            if (!this.vegaView || !this.baseZoneName || !this.dynamicZoneName) {
-                console.warn('Vega view or zone data names not ready. Cannot push strike zone update.');
-                return;
-            }
+        // 3. PUSH NEW COORDINATES TO VEGA using direct data access
+        if (!this.vegaView || !this.baseZoneName || !this.dynamicZoneName) {
+            console.warn('Vega view or zone data names not ready. Cannot push strike zone update.');
+            return;
+        }
 
-            // // --- Direct Data Modification ---
+        const vegaChangeset: any = vegaEmbed.vega.changeset; 
 
-            // // A. Get the Base Zone data array
-            // const baseData = this.vegaView.data(this.baseZoneName);
-            // if (baseData && baseData.length > 0) {
-            //     // Modify the properties of the first (and only) datum in the array
-            //     baseData[0].y = this.currentBaseZoneBtm;
-            //     baseData[0].y2 = this.currentBaseZoneTop;
-            // }
+        const dynamicDatum = {
+            id: 'dynamic_zone', 
+            x: -0.708, x2: 0.708, 
+            y: this.currentDynamicZoneBtm, 
+            y2: this.currentDynamicZoneTop 
+        };
+        const dynamicChanges = vegaChangeset()
+            .remove((d: any) => d.id === 'dynamic_zone') 
+            .insert(dynamicDatum);                       
+        
+        const baseDatum = {
+            id: 'base_zone', 
+            x: -0.708, x2: 0.708,
+            y: this.currentBaseZoneBtm, 
+            y2: this.currentBaseZoneTop 
+        };
+        const baseChanges = vegaChangeset()
+            .remove((d: any) => d.id === 'base_zone') 
+            .insert(baseDatum);                      
 
-            // // B. Get the Dynamic Zone data array
-            // const dynamicData = this.vegaView.data(this.dynamicZoneName);
-            // if (dynamicData && dynamicData.length > 0) {
-            //     // Modify the properties of the first (and only) datum in the array
-            //     dynamicData[0].y = this.currentDynamicZoneBtm;
-            //     dynamicData[0].y2 = this.currentDynamicZoneTop;
-            // }
+        const verticalGridData = [
+            { id: 'vertical_grid_1', y: this.currentDynamicZoneBtm, y2: this.currentDynamicZoneTop, x_center: -0.236 },
+            { id: 'vertical_grid_2', y: this.currentDynamicZoneBtm, y2: this.currentDynamicZoneTop, x_center: 0.236 }
+        ];
+        const verticalGridChanges = vegaChangeset()
+            .remove((d: any) => d.id === 'vertical_grid_1' || d.id === 'vertical_grid_2') 
+            .insert(verticalGridData);
 
-            // // 4. Tell Vega to re-render the view with the modified data
-            // this.vegaView.runAsync();
+        const horizontalGridData = [
+            { id: 'horizontal_grid_1', x: -0.708, x2: 0.708, y_center: this.currentGridY1 },
+            { id: 'horizontal_grid_2', x: -0.708, x2: 0.708, y_center: this.currentGridY2 }
+        ];
+        const horizontalGridChanges = vegaChangeset()
+            .remove((d: any) => d.id === 'horizontal_grid_1' || d.id === 'horizontal_grid_2') 
+            .insert(horizontalGridData);
 
-            // Access the changeset utility (still necessary to avoid the TypeScript error)
-            const vegaChangeset: any = vegaEmbed.vega.changeset; 
-
-            // --- Dynamic Zone Update (Remove old, Insert new is the most reliable method) ---
-            const dynamicDatum = {
-                id: 'dynamic_zone', 
-                x: -0.708, x2: 0.708, 
-                y: this.currentDynamicZoneBtm, 
-                y2: this.currentDynamicZoneTop 
-            };
-            const dynamicChanges = vegaChangeset()
-                .remove((d: any) => d.id === 'dynamic_zone') 
-                .insert(dynamicDatum);                       
-            
-            // --- Base Zone Update ---
-            const baseDatum = {
-                id: 'base_zone', 
-                x: -0.708, x2: 0.708,
-                y: this.currentBaseZoneBtm, 
-                y2: this.currentBaseZoneTop 
-            };
-            const baseChanges = vegaChangeset()
-                .remove((d: any) => d.id === 'base_zone') 
-                .insert(baseDatum);                      
-
-            // 3. Apply the changes using the reliable synchronous 'run()' or 'runAsync()'.
-            // Since we are inside runAfter(), using synchronous 'run()' is often fine here,
-            // but sticking with 'runAsync()' to be cautious is safer.
-
-            this.vegaView.change(this.dynamicZoneName, dynamicChanges).runAsync()
-                .then(() => {
-                    // Chain the second change to ensure sequential execution
-                    return this.vegaView.change(this.baseZoneName, baseChanges).runAsync();
-                })
-                .then(() => {
-                    console.log(`Pushed strike zone update for ${batterName}.`);
-                })
-                .catch(console.error); 
-        });
+        this.vegaView.change(this.dynamicZoneName, dynamicChanges).runAsync()
+            .then(() => {
+                return this.vegaView.change(this.baseZoneName, baseChanges).runAsync();
+            })
+            .then(() => {
+                return this.vegaView.change(this.verticalGridDataName, verticalGridChanges).runAsync();
+            })
+            .then(() => {
+                return this.vegaView.change(this.horizontalGridDataName, horizontalGridChanges).runAsync();
+            })
+            .then(() => {
+                console.log(`Pushed strike zone update for ${batterName}.`);
+            })
+            .catch(console.error);
     
         console.log(`Pushed strike zone update for ${batterName}: [${this.currentDynamicZoneBtm}, ${this.currentDynamicZoneTop}]`);
     }
