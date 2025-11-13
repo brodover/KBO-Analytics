@@ -7,9 +7,9 @@
       <option *ngFor="let team of uniquePitcherTeams" [value]="team">{{ team }}</option>
     </select>
 
-    <label for="opponentTeam">Filter by Opponent Team:</label>
-    <select id="opponentTeam" [(ngModel)]="selectedOpponentTeam" (change)="applyFilters()">
-      <option *ngFor="let team of uniqueOpponentTeams" [value]="team">{{ team }}</option>
+    <label for="batterTeam">Filter by Batter Team:</label>
+    <select id="batterTeam" [(ngModel)]="selectedBatterTeam" (change)="applyFilters()">
+      <option *ngFor="let team of uniqueBatterTeams" [value]="team">{{ team }}</option>
     </select>
   </div>
 
@@ -17,7 +17,7 @@
   <thead>
     <tr>
       <th rowspan="2">Pitcher Team</th>
-      <th rowspan="2">Opponent Team</th>
+      <th rowspan="2">Batter Team</th>
       <th rowspan="2">Pitcher Name</th>
       <th rowspan="2">Pitch Type</th>
       <th colspan="4" class="windup-header">Windup (Bases Empty)</th> 

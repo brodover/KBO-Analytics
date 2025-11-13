@@ -20,10 +20,10 @@ export class PitcherStats implements OnInit {
 
   // Dropdown states
   uniquePitcherTeams: string[] = [];
-  uniqueOpponentTeams: string[] = [];
+  uniqueBatterTeams: string[] = [];
   
   selectedPitcherTeam: string = 'All'; // Default to show all
-  selectedOpponentTeam: string = 'All'; // Default to show all
+  selectedBatterTeam: string = 'All'; // Default to show all
 
   constructor(private http: HttpClient) { }
 
@@ -39,7 +39,7 @@ export class PitcherStats implements OnInit {
         
         // Populate dropdown options
         this.uniquePitcherTeams = ['All', ...new Set(data.map(d => d.pitcher_team_code))].sort();
-        this.uniqueOpponentTeams = ['All', ...new Set(data.map(d => d.batter_team_code))].sort();
+        this.uniqueBatterTeams = ['All', ...new Set(data.map(d => d.batter_team_code))].sort();
         
         // Initial filter
         this.applyFilters();
@@ -56,10 +56,10 @@ export class PitcherStats implements OnInit {
       );
     }
 
-    // Filter by Opponent Team (Dropdown 2)
-    if (this.selectedOpponentTeam !== 'All') {
+    // Filter by Batter Team (Dropdown 2)
+    if (this.selectedBatterTeam !== 'All') {
       tempStats = tempStats.filter(
-        stat => stat.batter_team_code === this.selectedOpponentTeam
+        stat => stat.batter_team_code === this.selectedBatterTeam
       );
     }
 
