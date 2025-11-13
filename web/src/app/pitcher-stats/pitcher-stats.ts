@@ -3,13 +3,13 @@ import { PercentPipe, DecimalPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PitcherEffectiveness } from '../interfaces/pitcher-effectiveness';
-import { map, Observable } from 'rxjs';
+import { PitcherStatsBars } from '../pitcher-stats-bars/pitcher-stats-bars';
 
 @Component({
   selector: 'app-pitcher-stats',
   templateUrl: './pitcher-stats.html',
   styleUrls: ['./pitcher-stats.css'],
-  imports: [PercentPipe, DecimalPipe, CommonModule, FormsModule]
+  imports: [PitcherStatsBars, PercentPipe, DecimalPipe, CommonModule, FormsModule]
 })
 export class PitcherStats implements OnInit {
 

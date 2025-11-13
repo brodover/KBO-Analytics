@@ -1,0 +1,37 @@
+.pitch-bar-container {
+  display: flex;
+  flex-direction: row;
+  height: 18px; /* Or whatever height you prefer */
+  align-items: center;
+  /* Ensures bars don't wrap if they overflow */
+  flex-wrap: nowrap; 
+  overflow: hidden;
+}
+
+/* Style for a SINGLE bar (1 pitch) */
+.bar-single {
+  width: 3px; 
+  height: 100%;
+  box-sizing: border-box;
+  border-right: 1px solid rgba(0, 0, 0, 0.1); 
+}
+
+/* Style for a GROUP bar (10 pitches) */
+.bar-group {
+  /* Width is set dynamically by [style.width.px] in the HTML */
+  /* e.g., 2 groups = 2 * 10px = 20px */
+  height: 100%;
+  box-sizing: border-box;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* --- Color Definitions --- */
+.bar-contact {
+  background-color: rgb(84, 105, 230);
+}
+.bar-whiff {
+  background-color: palevioletred;
+}
+.bar-remaining {
+  background-color: lightgrey;
+}

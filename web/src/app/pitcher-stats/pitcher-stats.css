@@ -1,0 +1,25 @@
+.pitch-count-cell {
+  /* Optional: Center content vertically in the table cell */
+  vertical-align: middle; 
+}
+
+.pitch-count-wrapper {
+  /* Enable flexbox to align number and component horizontally */
+  display: flex;
+  align-items: center; /* Vertically centers items */
+  gap: 8px; /* Adds space between the number and the bars */
+  min-width: 150px; /* Ensure the cell has enough room */
+}
+
+.pitch-number {
+  /* Style the number to stand out a bit */
+  font-weight: bold;
+  font-size: 1.1em;
+  min-width: 40px; /* Give it a fixed width for alignment across rows */
+  text-align: right;
+}
+
+/* Ensure the bar component container itself takes up the remaining space */
+.pitch-count-wrapper app-pitch-bars {
+    flex-grow: 1;
+}
