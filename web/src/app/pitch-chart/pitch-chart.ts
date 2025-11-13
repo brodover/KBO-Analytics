@@ -325,4 +325,29 @@ export class PitchChart implements AfterViewInit {
                 .catch(console.error);
         });
     }
+
+    /**
+     * Manually prints the current internal state of the Vega view,
+     * including active filter parameters, for debugging.
+     */
+    printCurrentVegaState(): void {
+        if (!this.vegaView) {
+            console.warn('Vega view not yet available to print state.');
+            return;
+        }
+
+        try {
+            const currentState = this.vegaView.getState();
+
+            console.log('[FINAL DEBUG] Vega Internal State (Manual Check):', currentState);
+            console.log('--- Selector Values ---');
+            console.log(`BatterSelector Value:`, currentState.signals?.BatterSelector || currentState.data?.BatterSelector);
+            console.log(`PitcherSelector Value:`, currentState.signals?.PitcherSelector || currentState.data?.PitcherSelector);
+            console.log('-----------------------');
+        } catch (e) {
+            console.error('Error reading Vega state:', e);
+        }
+
+        this.vegaView.run();
+    }
 }
