@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 interface BarSegment {
@@ -21,15 +21,39 @@ export class PitcherStatsBars implements OnChanges {
 
     segments: BarSegment[] = [];
 
-    singleBarWidth: number = 3;
-    tensBarWidth: number = 30;
+    private readonly BASE_SINGLE_PITCH_WIDTH_PX = 3;
+    private readonly PITCHES_AT_MAX_WIDTH = 100;
+    private readonly MAX_PIXEL_WIDTH = 300;
+
+    public scaledSingleBarWidth: number = this.BASE_SINGLE_PITCH_WIDTH_PX;
+    public scaledTensBarWidth: number = this.BASE_SINGLE_PITCH_WIDTH_PX * 10;
+    
+    public isScaled: boolean = false; 
     
     ngOnChanges(changes: SimpleChanges): void {
       if (this.totalPitches > 0) {
+        this.calculateScaling();
         this.calculateBars();
       } else {
-        this.segments = []; // Clear bars if total is 0
+        this.segments = []; 
+        this.isScaled = false;
       }
+    }
+    
+    private calculateScaling(): void {
+        let scaleFactor = 1;
+
+        if (this.totalPitches > this.PITCHES_AT_MAX_WIDTH) {
+            // Example: 200 pitches -> scaleFactor = 100 / 200 = 0.5
+            scaleFactor = this.PITCHES_AT_MAX_WIDTH / this.totalPitches;
+            this.isScaled = true;
+        } else {
+            this.isScaled = false;
+        }
+
+        // Apply scale factor to the base widths
+        this.scaledSingleBarWidth = this.BASE_SINGLE_PITCH_WIDTH_PX * scaleFactor;
+        this.scaledTensBarWidth = (this.BASE_SINGLE_PITCH_WIDTH_PX * 10) * scaleFactor;
     }
     
     private calculateBars(): void {
@@ -70,11 +94,10 @@ export class PitcherStatsBars implements OnChanges {
             // Add 'single' bars (noswing < 10)
             const singleCount = count % 10;
             if (singleCount > 0) {
-                // PUSH ONLY ONE OBJECT FOR THE ENTIRE REMAINDER
                 this.segments.push({
                     type: raw.type,
-                    count: singleCount, // This is the actual number of pitches (1-9)
-                    widthClass: 'single' // Still use the 'single' class name for styling
+                    count: singleCount,
+                    widthClass: 'single'
                 });
             }
         }

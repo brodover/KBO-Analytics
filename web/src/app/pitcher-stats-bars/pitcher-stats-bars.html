@@ -1,13 +1,26 @@
-<div class="pitch-bar-container">
-    <ng-container *ngFor="let segment of segments">
+<div class="pitch-bar-wrapper">
 
-        <div *ngIf="segment.widthClass === 'group'" class="bar-group" [ngClass]="getBarClass(segment.type)"
-            [style.width.px]="segment.count * tensBarWidth"
-            [title]="segment.count * 10 + ' pitches (' + segment.type + ')'"></div>
+    <!-- Scaling Indicator (Optional but recommended for user clarity) -->
+    <div *ngIf="isScaled" class="scaling-indicator"
+        title="Bar widths scaled to fit screen ({{ totalPitches }} pitches)">
+        <small>Scaled</small>
+    </div>
 
-        <div *ngIf="segment.widthClass === 'single'" class="bar-single" [ngClass]="getBarClass(segment.type)"
-            [style.width.px]="segment.count * singleBarWidth"
-            [title]="segment.count + ' pitches (' + segment.type + ')'"></div>
+    <div class="pitch-bar-container">
+        <ng-container *ngFor="let segment of segments">
 
-    </ng-container>
+            <!-- Group Bar (10s): Use scaledTensBarWidth -->
+            <div *ngIf="segment.widthClass === 'group'" class="bar-group" 
+                [ngClass]="getBarClass(segment.type)"
+                [style.width.px]="segment.count * scaledTensBarWidth"
+                [title]="segment.count * 10 + ' pitches (' + segment.type + ')'"></div>
+
+            <!-- Single Bar (Remainder < 10): Use scaledSingleBarWidth -->
+            <div *ngIf="segment.widthClass === 'single'" class="bar-single" 
+                [ngClass]="getBarClass(segment.type)"
+                [style.width.px]="segment.count * scaledSingleBarWidth"
+                [title]="segment.count + ' pitches (' + segment.type + ')'"></div>
+
+        </ng-container>
+    </div>
 </div>

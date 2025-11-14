@@ -34,7 +34,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let stat of filteredStats">
+      <tr 
+        *ngFor="let stat of filteredStats; let i = index"
+        [ngClass]="{'pitcher-divider': isNewPitcher(i)}">
+
         <td>{{ stat.pitcher_team_code }}</td>
         <td>{{ stat.batter_team_code }}</td>
         <td>{{ stat.pitcher_name }}</td>
