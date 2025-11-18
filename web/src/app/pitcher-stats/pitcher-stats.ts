@@ -6,6 +6,7 @@ import { PitcherEffectiveness } from '../interfaces/pitcher-effectiveness';
 import { PitcherStatsBars } from '../pitcher-stats-bars/pitcher-stats-bars';
 
 @Component({
+  standalone: true,
   selector: 'app-pitcher-stats',
   templateUrl: './pitcher-stats.html',
   styleUrls: ['./pitcher-stats.css'],

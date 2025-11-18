@@ -9,7 +9,7 @@ interface NavLink {
 
 @Component({
   selector: 'app-nav-menu',
-  standalone: true, // Make it a standalone component
+  standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive], // Include routing directives
   template: `
     <nav class="main-nav">
@@ -23,10 +23,9 @@ interface NavLink {
   styleUrls: ['./nav-menu.css']
 })
 export class NavMenu {
-  // Define your links here, making it easy to add more pages later
   navLinks: NavLink[] = [
-    { path: '/pitch-chart', label: 'Pitch Chart Overview' },
-    { path: '/pitcher-stats', label: 'Pitcher Predictability (Stats)' },
-    // Add more links here later (e.g., Batter Analysis, Zone Analysis)
+    { path: '/pitch-chart', label: 'Pitch Chart' },
+    { path: '/pitch-tunnel', label: 'Pitch Tunnel' },
+    { path: '/pitcher-stats', label: 'Pitcher Swing/Contact %' },
   ];
 }

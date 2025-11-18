@@ -13,10 +13,10 @@ const DEFAULT_ZONE_TOP = 3.4;
 const DEFAULT_ZONE_BTM = 1.6;
 
 @Component({
+    standalone: true,
     selector: 'app-pitch-chart',
     templateUrl: './pitch-chart.html',
     styleUrl: './pitch-chart.css',
-    standalone: true, // Use standalone property if your project supports it, otherwise use imports/declarations
     imports: [
         CommonModule,
         FormsModule
