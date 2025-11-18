@@ -62,8 +62,8 @@ export class PitchTunnel implements OnInit {
      * Loads the pitch data from the static 'all_pitches.json' file 
      * located in the 'public/assets' directory.
      */
-    private loadPitchData(): void { // <-- Removed 'async' and 'Promise<void>'
-        this.isLoading.set(true); // <-- Set loading state to true immediately
+    private loadPitchData(): void {
+        this.isLoading.set(true);
 
         this.http.get<Pitch[]>(`assets/all_pitches.json`).pipe(
             // 'finalize' runs when the observable completes or errors out
@@ -72,28 +72,26 @@ export class PitchTunnel implements OnInit {
             next: (data) => {
                 this.allPitches.set(data);
 
-                // NEW: Extract unique teams after data load
                 const teams = Array.from(new Set(data.map(p => p.pitcher_team_code))).sort();
-                this.allTeams.set(teams); // <-- ADD THESE TWO LINES
+                this.allTeams.set(teams);
 
                 console.log(`Successfully loaded ${data.length} pitches from assets.`);
             },
             error: (error) => {
                 console.error('Error loading pitch data from assets:', error);
-                this.allPitches.set([]); // Clear data on error
+                this.allPitches.set([]);
             }
         });
     }
 
     // --- Computed Signals (Now using allPitches()) ---
     uniquePitchers = computed(() => {
-        const selectedTeam = this.selectedTeam(); // <-- NEW: Filter by team
+        const selectedTeam = this.selectedTeam();
 
-        if (!selectedTeam) return []; // Return empty if no team selected
-
+        if (!selectedTeam) return []; 
         return Array.from(new Set(
             this.allPitches()
-                .filter(p => p.pitcher_team_code === selectedTeam) // <-- NEW: Apply team filter
+                .filter(p => p.pitcher_team_code === selectedTeam)
                 .map(p => p.pitcher_name)
         )).sort();
     });
