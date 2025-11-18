@@ -1,7 +1,8 @@
 export interface Pitch {
   pitch_id?: number; 
+  pitcher_team_code: string;
   pitcher_name: string;
-  pitch_type: string; // e.g., 'FF', 'CU', 'SL'
+  pitch_type: string;
   is_throwing_stretch: boolean; // True for Stretch, False for Windup
   
   // Release point (ft)

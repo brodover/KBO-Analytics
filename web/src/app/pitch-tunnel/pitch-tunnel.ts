@@ -27,16 +27,15 @@ export class PitchTunnel implements OnInit {
 
     // Color palette for pitch types (consistent colors help visualization)
     pitchColors: { [key: string]: string } = {
-        '직구': '#1f77b4', // Blue (Fastball)
-        '포크': '#ff7f0e', // Orange (Forkball/Splitter)
-        '커브': '#2ca02c', // Green (Curveball)
-        '슬라이더': '#d62728', // Red (Slider)
-        '싱커': '#9467bd', // Purple (Sinker)
-        '체인지업': '#8c564b', // Brown (Changeup)
-        'FF': '#1f77b4', // Add common MLB types if present
-        'SL': '#d62728',
-        'CH': '#8c564b',
-        'CU': '#2ca02c',
+        '직구': '#4682B4',
+        '슬라이더': '#f5334d',
+        '포크': '#ff7f0e',
+        '커브': '#3CB371',
+        '체인지업': '#8c564b',
+        '투심': '#9370DB',
+        '커터': '#f0c819',
+        '스위퍼': '#e771b6',
+        '너클볼': '#54dbd5ff',
     };
 
     // --- State Signals ---
@@ -44,7 +43,11 @@ export class PitchTunnel implements OnInit {
     deliveryMode = signal<'windup' | 'stretch' | 'both'>('both');
     analysisResults = signal<TunnelAnalysisResult[]>([]);
 
-    // New State Signals for Data Loading
+    // Signals for Team Filtering
+    selectedTeam = signal<string | null>(null);
+    allTeams = signal<string[]>([]);
+
+    // State Signals for Data Loading
     isLoading = signal<boolean>(true);
     allPitches = signal<Pitch[]>([]);
 
@@ -68,6 +71,11 @@ export class PitchTunnel implements OnInit {
         ).subscribe({
             next: (data) => {
                 this.allPitches.set(data);
+
+                // NEW: Extract unique teams after data load
+                const teams = Array.from(new Set(data.map(p => p.pitcher_team_code))).sort();
+                this.allTeams.set(teams); // <-- ADD THESE TWO LINES
+
                 console.log(`Successfully loaded ${data.length} pitches from assets.`);
             },
             error: (error) => {
@@ -79,7 +87,15 @@ export class PitchTunnel implements OnInit {
 
     // --- Computed Signals (Now using allPitches()) ---
     uniquePitchers = computed(() => {
-        return Array.from(new Set(this.allPitches().map(p => p.pitcher_name))).sort();
+        const selectedTeam = this.selectedTeam(); // <-- NEW: Filter by team
+
+        if (!selectedTeam) return []; // Return empty if no team selected
+
+        return Array.from(new Set(
+            this.allPitches()
+                .filter(p => p.pitcher_team_code === selectedTeam) // <-- NEW: Apply team filter
+                .map(p => p.pitcher_name)
+        )).sort();
     });
 
     filteredPitches = computed(() => {
@@ -116,6 +132,13 @@ export class PitchTunnel implements OnInit {
     });
 
     // --- Event Handlers ---
+    selectTeam(event: Event): void {
+        const selectElement = event.target as HTMLSelectElement;
+        this.selectedTeam.set(selectElement.value || null);
+        this.selectedPitcher.set(null); // Reset pitcher when team changes
+        this.analysisResults.set([]); // Clear results
+    }
+
     selectPitcher(event: Event): void {
         const selectElement = event.target as HTMLSelectElement;
         this.selectedPitcher.set(selectElement.value || null);
@@ -251,10 +274,10 @@ export class PitchTunnel implements OnInit {
         ctx.clearRect(0, 0, width, height);
 
         // --- Define Plotting Area (in feet) ---
-        // X plane: -3.0 ft (pitcher's right) to 3.0 ft (pitcher's left). Plate is at X=0.
-        const xMin = -3.0;
-        const xMax = 3.0;
-        // Z plane: 0.0 ft (ground) to 7.0 ft (top of plot)
+        // X plane: - (pitcher's right) to + (pitcher's left). Plate is at X=0.
+        const xMin = -4.0;
+        const xMax = 4.0;
+        // Z plane: 0.0 ft (ground) to top of plot
         const zMin = 0.0;
         const zMax = 7.0;
 
@@ -290,12 +313,33 @@ export class PitchTunnel implements OnInit {
 
         // Draw center line (X=0)
         ctx.setLineDash([2, 5]);
-        const { pxX: xC } = toPx(0, 0);
         ctx.strokeStyle = '#9ca3af';
-        ctx.beginPath();
-        ctx.moveTo(xC, 0);
-        ctx.lineTo(xC, height);
-        ctx.stroke();
+
+        // Loop through every foot mark until you are past the visible area
+        const firstVerticalFoot = Math.floor(xMin);
+        for (let footX = firstVerticalFoot; footX <= xMax; footX++) {
+            // Convert the foot value to a pixel coordinate
+            const { pxX } = toPx(footX, 0);
+
+            // Draw the line
+            ctx.beginPath();
+            ctx.moveTo(pxX, 0);
+            ctx.lineTo(pxX, height);
+            ctx.stroke();
+        }
+
+        // 2. Draw horizontal grid lines (every 1 foot along the Y-axis)
+        const firstHorizontalFoot = Math.floor(zMin);
+        for (let footY = firstHorizontalFoot; footY <= zMax; footY++) {
+            // Convert the foot value to a pixel coordinate
+            const { pxY } = toPx(0, footY);
+
+            // Draw the line
+            ctx.beginPath();
+            ctx.moveTo(0, pxY);
+            ctx.lineTo(width, pxY);
+            ctx.stroke();
+        }
 
         ctx.setLineDash([]); // Reset line dash for pitch paths
 
@@ -324,6 +368,11 @@ export class PitchTunnel implements OnInit {
             ctx.arc(release.pxX, release.pxY, 5, 0, Math.PI * 2);
             ctx.fill();
 
+            // Draw Tunnel Point (Dot)
+            ctx.beginPath();
+            ctx.arc(tunnel.pxX, tunnel.pxY, 3, 0, Math.PI * 2);
+            ctx.fill();
+
             // Label the Tunnel Point
             ctx.font = '10px sans-serif';
             ctx.fillText(pitch.pitch_type, tunnel.pxX + 6, tunnel.pxY + 3);
@@ -332,7 +381,7 @@ export class PitchTunnel implements OnInit {
         // --- 3. Draw Legend ---
         ctx.fillStyle = '#374151';
         ctx.font = '12px sans-serif';
-        ctx.fillText('Strike Zone Reference (Avg)', xL, yT - 10);
+        ctx.fillText('Strike Zone (Avg)', xL, yT - 10);
 
         let legendY = 20;
         for (const [type, color] of Object.entries(this.pitchColors)) {

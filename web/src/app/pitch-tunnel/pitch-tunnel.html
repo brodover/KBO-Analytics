@@ -20,12 +20,28 @@
         <div class="text-sm text-gray-500 mb-4 italic">
             Loaded {{ allPitches().length | number }} total pitches.
         </div>
+        <!-- Team Selection Dropdown -->
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+            <label for="team-select" class="font-semibold text-gray-700 whitespace-nowrap">
+                Select Team:
+            </label>
+            <select id="team-select" [ngModel]="selectedTeam()" (change)="selectTeam($event)"
+                class="flex-grow p-2 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                <option [value]="null" disabled>-- Choose a Team --</option>
+                @for (team of allTeams(); track team) {
+                <option [value]="team">{{ team }}</option>
+                }
+            </select>
+        </div>
+
+        <!-- Pitcher Selection Dropdown (Now dependent on Team) -->
         <div class="flex flex-col sm:flex-row items-center gap-4">
             <label for="pitcher-select" class="font-semibold text-gray-700 whitespace-nowrap">
                 Select Pitcher:
             </label>
             <select id="pitcher-select" [ngModel]="selectedPitcher()" (change)="selectPitcher($event)"
-                class="flex-grow p-2 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                [disabled]="!selectedTeam()"
+                class="flex-grow p-2 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 transition duration-150">
                 <option [value]="null" disabled>-- Choose a Pitcher --</option>
                 @for (pitcher of uniquePitchers(); track pitcher) {
                 <option [value]="pitcher">{{ pitcher }}</option>
@@ -66,10 +82,12 @@
     </p>
     } @else {
     <div class="bg-white rounded-xl shadow-xl p-4 mb-8">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">Pitch Tunnel Visualization (Pitcher's View)</h3>
-        <p class="text-sm text-gray-500 mb-4">The graph shows the average release point (dot) and the path up to 150ms (end of line) for each pitch type.</p>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">Pitch Tunnel Visualization (Batter's POV)
+        </h3>
+        <p class="text-sm text-gray-500 mb-4">Larger dot: average release point. Smaller dot: average ball location at 150ms.</p>
         <!-- CANVAS FOR VISUALIZATION -->
-        <canvas #tunnelCanvas id="tunnelCanvas" width="500" height="500" class="w-full h-auto max-w-lg mx-auto border border-gray-300 rounded-lg shadow-inner"></canvas>
+        <canvas #tunnelCanvas id="tunnelCanvas" width="570" height="500"
+            class="w-full h-auto max-w-lg mx-auto border border-gray-300 rounded-lg shadow-inner"></canvas>
     </div>
     <!-- Results Table -->
     <div class="bg-white rounded-xl shadow-xl overflow-x-auto">
