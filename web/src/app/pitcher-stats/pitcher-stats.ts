@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PercentPipe, DecimalPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { PitcherEffectiveness } from '../interfaces/pitcher-effectiveness';
+import { PitcherEffectiveness } from '../interfaces/pitching';
 import { PitcherStatsBars } from '../pitcher-stats-bars/pitcher-stats-bars';
 
 @Component({

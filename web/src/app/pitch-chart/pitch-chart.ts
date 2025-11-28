@@ -3,7 +3,7 @@ import { Component, AfterViewInit, ElementRef, ViewChild, Inject, PLATFORM_ID } 
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as vegaEmbed from 'vega-embed';
-import { StrikeZoneData } from '../interfaces/strike-zone-data';
+import { StrikeZoneData } from '../interfaces/pitching';
 
 // --- CONFIG CONSTANTS (For cleaner code) ---
 const HALF_PLATE_WIDTH = 0.708;

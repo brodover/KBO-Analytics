@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component, signal, computed, OnInit, ViewChild
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Pitch } from '../interfaces/pitch';
-import { PitchTypeSummary } from '../interfaces/pitch-type-summary';
+import { Pitch, PitchTypeSummary } from '../interfaces/pitching';
 import { finalize } from 'rxjs';
 
 interface TunnelAnalysisResult {
