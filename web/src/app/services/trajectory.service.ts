@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
-import { PitchTrajectory, PitcherTeam } from '../interfaces/pitching';
+import { TrajectoryPoint, PitcherTeam } from '../interfaces/pitching';
 
 @Injectable({
   providedIn: 'root'
@@ -11,27 +11,14 @@ import { PitchTrajectory, PitcherTeam } from '../interfaces/pitching';
 export class TrajectoryService {
   private trajectoryDataUrl = 'assets/batter_pov_trajectories.json';
 
-  private rawTrajectories$: Observable<PitchTrajectory[]>;
-  private indexedTrajectories$!: Observable<Map<string, PitchTrajectory>>;
+  private rawTrajectories$: Observable<TrajectoryPoint[]>;
 
   // Observable for the grouped dropdown list
   public groupedPitchers$: Observable<PitcherTeam[]>;
 
   constructor(private http: HttpClient) {
 
-    this.rawTrajectories$ = this.http.get<PitchTrajectory[]>(this.trajectoryDataUrl).pipe(
-      shareReplay(1)
-    );
-
-    this.indexedTrajectories$ = this.rawTrajectories$.pipe(
-      map(trajectories => {
-        const dataMap = new Map<string, PitchTrajectory>();
-        trajectories.forEach(t => {
-          const key = `${t.pitcher_id}_${t.pitch_type}`;
-          dataMap.set(key, t)
-        });
-        return dataMap;
-      }),
+    this.rawTrajectories$ = this.http.get<TrajectoryPoint[]>(this.trajectoryDataUrl).pipe(
       shareReplay(1)
     );
 
@@ -77,14 +64,22 @@ export class TrajectoryService {
     );
   }
 
-  getTrajectory(pitcherId: number, pitchType: string): Observable<PitchTrajectory | undefined> {
-    const key = `${pitcherId}_${pitchType}`;
-
-    // The Map.get(key) returns PitcherPitchTrajectory | undefined.
-    // The map operator correctly passes this through.
-    return this.indexedTrajectories$.pipe(
-      map(dataMap => dataMap.get(key))
-    );
+  // lookup method for the Vega-Lite chart data
+  getTrajectoryData(pitcherId: number, pitchType1: string, pitchType2: string): Observable<TrajectoryPoint[]> {
+      if (!pitchType1 || !pitchType2) {
+          return this.rawTrajectories$.pipe(map(() => []));
+      }
+      
+      return this.rawTrajectories$.pipe(
+          map(allPoints => {
+              // Filter the single array to include only the points for the two selected pitches
+              const filteredPoints = allPoints.filter(p => 
+                  p.pitcher_id === pitcherId && 
+                  (p.pitch_type === pitchType1 || p.pitch_type === pitchType2)
+              );
+              return filteredPoints;
+          })
+      );
   }
 
   getPitchTypesForPitcher(pitcherId: number): Observable<string[]> {

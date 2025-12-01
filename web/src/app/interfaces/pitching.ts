@@ -59,23 +59,18 @@ export interface PitcherEffectiveness {
 }
 
 export interface TrajectoryPoint {
-  t: number;           // Time in seconds from release
-  x: number;           // Horizontal location (Batter POV)
-  z: number;           // Vertical location (Batter POV)
-  is_tunnel_end: boolean; // True if time >= 150ms remaining
-}
-
-export interface PitchTrajectory {
-  pitcher_pitch_key: string; // e.g., "54755_직구"
   pitcher_id: number;
   pitcher_name: string;
-  pitcher_team_code: string;
   pitch_type: string;
-  count: number;
-  avg_trajectory: TrajectoryPoint[];
+  pitcher_team_code: string;
+  t: number; // Time
+  x: number; // Lateral position
+  z: number; // Vertical position
+  is_tunnel_end: boolean;
 }
 
 export interface PitcherTeam {
   teamCode: string;
   pitchers: { id: number; name: string }[];
 }
+

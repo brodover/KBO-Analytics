@@ -36,21 +36,12 @@
 
 <hr>
 
-<div *ngIf="plotData" class="visualization-area">
-    <h3>Pitch Pair: {{ pitchType1 }} vs. {{ pitchType2 }}</h3>
-
-    <div class="chart-container">
-        <p>Placeholder for Trajectory Chart (X vs Z Plot)</p>
-        <p>Points to Plot: {{ plotData!.trajectory1.length + plotData!.trajectory2.length }}</p>
-
-        <div class="drawing-guide">
-            * **Same Color:** Trajectory before 150ms remaining (the tunnel).
-            * **Different Colors:** Trajectory after 150ms remaining (the divergence).
-        </div>
+<div *ngIf="chartData" class="chart-container">
+    <h2>Trajectory Visualization</h2>
+    <div #chartContainer id="trajectory-chart">
     </div>
-
 </div>
 
-<div *ngIf="!plotData && selectedPitcherId" class="message">
-    <p>Select two pitches to visualize the tunnel.</p>
+<div *ngIf="!chartData && selectedPitcherId" class="message">
+    <p>Select two pitch types to view the tunnel visualization.</p>
 </div>

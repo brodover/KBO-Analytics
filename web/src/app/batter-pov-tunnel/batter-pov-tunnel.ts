@@ -1,43 +1,45 @@
 // src/app/batter-pov-tunnel/batter-pov-tunnel.component.ts
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
 import { TrajectoryService } from '../services/trajectory.service';
 import { TrajectoryPoint, PitcherTeam } from '../interfaces/pitching';
-import { combineLatest, Observable, Subscription } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import embed from 'vega-embed';
 
 @Component({
   selector: 'app-batter-pov-tunnel',
   templateUrl: './batter-pov-tunnel.html',
   styleUrls: ['./batter-pov-tunnel.css'],
-  imports: [ FormsModule, CommonModule, AsyncPipe ]
+  imports: [FormsModule, CommonModule, AsyncPipe]
 })
 export class BatterPovTunnel implements OnInit, OnDestroy {
+  @ViewChild('chartContainer') chartContainer!: ElementRef;
+
   groupedPitchers$: Observable<PitcherTeam[]>;
   selectedPitcherId: number | null = null;
   availablePitchTypes: string[] = []; // List of pitches for the selected pitcher
-  private pitchTypeSubscription: Subscription | undefined; // For cleanup
 
   // The two pitch types the user selects to compare
   pitchType1: string | null = null;
   pitchType2: string | null = null;
 
-  // Final data structure for plotting the lines
-  plotData: { trajectory1: TrajectoryPoint[], trajectory2: TrajectoryPoint[] } | null = null;
-  
-  // Example hardcoded pitch types for simplicity
-  allPitchTypes = ['직구', '스위퍼', '커브', '슬라이더']; 
+  chartData: TrajectoryPoint[] | null = null;
+
+  // cleanup
+  private pitchTypeSubscription: Subscription | undefined;
+  private chartDataSubscription: Subscription | undefined;
 
   constructor(private trajectoryService: TrajectoryService) {
     this.groupedPitchers$ = this.trajectoryService.groupedPitchers$;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
-ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.pitchTypeSubscription?.unsubscribe();
+    this.chartDataSubscription?.unsubscribe();
   }
 
   // Called when the pitcher selection changes
@@ -48,9 +50,8 @@ ngOnDestroy(): void {
 
     this.pitchType1 = null;
     this.pitchType2 = null;
-    this.plotData = null;
     this.availablePitchTypes = [];
-    
+
     if (pitcherId !== null) {
       const numPitcherId = Number(pitcherId);
 
@@ -60,41 +61,100 @@ ngOnDestroy(): void {
         .subscribe(types => {
           this.availablePitchTypes = types; // Populate with actual data
         });
+    } else {
+      console.log('No pitcher selected.');
     }
   }
 
   // Called when a pitch type selection changes
   updateTunnelVisualization(): void {
+    // 1. Cleanup old subscription
+    this.chartDataSubscription?.unsubscribe();
+    this.chartData = null; // Reset current data
+
     if (!this.selectedPitcherId || !this.pitchType1 || !this.pitchType2) {
-      this.plotData = null;
+      console.log('Incomplete selection, cannot update visualization.');
       return;
     }
 
-    // const traj1$ = this.trajectoryService.getTrajectory(this.selectedPitcherId, this.pitchType1);
-    // const traj2$ = this.trajectoryService.getTrajectory(this.selectedPitcherId, this.pitchType2);
+    const numPitcherId = Number(this.selectedPitcherId);
 
-    const traj1$ = this.trajectoryService.getTrajectory(this.selectedPitcherId, this.pitchType1).pipe(
-      filter(traj => !!traj) 
-    );
-    const traj2$ = this.trajectoryService.getTrajectory(this.selectedPitcherId, this.pitchType2).pipe(
-      filter(traj => !!traj) 
-    );
+    // 2. Get the NEW observable
+    this.chartDataSubscription = this.trajectoryService
+      .getTrajectoryData(numPitcherId, this.pitchType1, this.pitchType2)
+      .subscribe(data => {
+        this.chartData = data;
+        if (data && data.length > 0) {
+          setTimeout(() => {
+            this.renderChart();
+          }, 0);
+        }
+      });
+  }
 
-    // Combine the observables to ensure we have both datasets before plotting
-    combineLatest([traj1$, traj2$])
-      .pipe(
-        map(([traj1, traj2]) => {
-          if (traj1 && traj2) {
-            // Prepare the data arrays for plotting
-            this.plotData = {
-              trajectory1: traj1.avg_trajectory,
-              trajectory2: traj2.avg_trajectory
-            };
-          } else {
-             this.plotData = null;
-          }
-        })
-      )
-      .subscribe();
+  private renderChart(): void {
+    const element = this.chartContainer?.nativeElement;
+    if (!element || !this.chartData || this.chartData.length === 0) {
+      return;
+    }
+
+    // 1. Define the Vega-Lite Specification
+    const vegaSpec = this.createVegaLiteSpec(this.chartData);
+
+    // 2. Embed the chart into the DOM element
+    embed(element, vegaSpec, {
+      actions: false,
+      mode: 'vega-lite'
+    }).catch(console.error);
+  }
+
+  private createVegaLiteSpec(data: TrajectoryPoint[]): any {
+    return {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": 400,
+      "height": 500,
+      "title": `${this.pitchType1} vs ${this.pitchType2} Trajectory (X vs Z)`,
+      "data": {
+        "values": data // Pass the data array directly
+      },
+      "mark": "line",
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative",
+          "title": "Lateral Break (X)",
+          "scale": { "reverse": true }
+        },
+        "y": {
+          "field": "z",
+          "type": "quantitative",
+          "title": "Vertical Position (Z)",
+          "scale": { "domain": [1, 7] }
+        },
+        // Color based on Pitch Type
+        "color": {
+          "field": "pitch_type",
+          "type": "nominal",
+          "legend": { "title": "Pitch Type" }
+        },
+        // Ensure separate lines are drawn for each pitch type
+        "detail": {
+          "field": "pitch_type",
+          "type": "nominal"
+        },
+        // Ensure points are drawn in order of time (t)
+        "order": {
+          "field": "t",
+          "type": "quantitative"
+        },
+        // Opacity to distinguish tunnel (false) from divergence (true)
+        "opacity": {
+          "field": "is_tunnel_end",
+          "type": "nominal",
+          "legend": null,
+          "scale": { "domain": [false, true], "range": [0.3, 1.0] }
+        }
+      }
+    };
   }
 }

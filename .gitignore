@@ -10,7 +10,8 @@ __pycache__/
 
 /pitch_raw
 /pitch_processed
-final_processed/
+/final_processed
+/old
 
 /web/public
 
