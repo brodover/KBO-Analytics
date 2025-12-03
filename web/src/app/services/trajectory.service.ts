@@ -64,22 +64,16 @@ export class TrajectoryService {
     );
   }
 
-  // lookup method for the Vega-Lite chart data
-  getTrajectoryData(pitcherId: number, pitchType1: string, pitchType2: string): Observable<TrajectoryPoint[]> {
-      if (!pitchType1 || !pitchType2) {
-          return this.rawTrajectories$.pipe(map(() => []));
-      }
-      
-      return this.rawTrajectories$.pipe(
-          map(allPoints => {
-              // Filter the single array to include only the points for the two selected pitches
-              const filteredPoints = allPoints.filter(p => 
-                  p.pitcher_id === pitcherId && 
-                  (p.pitch_type === pitchType1 || p.pitch_type === pitchType2)
-              );
-              return filteredPoints;
-          })
-      );
+  getTrajectoryDataForAllPitches(pitcherId: number): Observable<TrajectoryPoint[]> {
+    return this.rawTrajectories$.pipe(
+        map(allPoints => {
+            // Filter the single array to include only the points for the selected pitcher
+            const filteredPoints = allPoints.filter(p => 
+                p.pitcher_id === pitcherId
+            );
+            return filteredPoints;
+        })
+    );
   }
 
   getPitchTypesForPitcher(pitcherId: number): Observable<string[]> {

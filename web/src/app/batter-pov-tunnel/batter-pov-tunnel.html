@@ -1,45 +1,29 @@
 <h2>⚾ Batter POV Tunnel Visualization</h2>
 
 <div class="controls">
-    <label for="pitcher-select">Select Pitcher:</label>
-    <select id="pitcher-select" [(ngModel)]="selectedPitcherId" (change)="onPitcherSelect(selectedPitcherId)">
-
-        <option [value]="null">-- Select a Pitcher --</option>
-
-        @for (group of groupedPitchers$ | async; track group.teamCode) {
-        <optgroup [label]="group.teamCode">
-            @for (pitcher of group.pitchers; track pitcher.id) {
-            <option [value]="pitcher.id">{{ pitcher.name }}</option>
-            }
-        </optgroup>
-        }
+    <select [(ngModel)]="selectedTeamCode" (change)="onTeamSelect(selectedTeamCode)">
+        <option [ngValue]="null" disabled>Select Team</option> 
+        <option *ngFor="let team of (groupedPitchers$ | async)" [ngValue]="team.teamCode">
+            {{ team.teamCode }}
+        </option>
     </select>
-
-    <ng-container *ngIf="selectedPitcherId">
-        <label for="pitch1-select">Pitch 1:</label>
-        <select id="pitch1-select" [(ngModel)]="pitchType1" (change)="updateTunnelVisualization()">
-            <option [value]="null">-- Pitch 1 --</option>
-            @for (type of availablePitchTypes; track type) {
-            <option [value]="type">{{ type }}</option>
-            }
-        </select>
-
-        <label for="pitch2-select">Pitch 2:</label>
-        <select id="pitch2-select" [(ngModel)]="pitchType2" (change)="updateTunnelVisualization()">
-            <option [value]="null">-- Pitch 2 --</option>
-            @for (type of availablePitchTypes; track type) {
-            <option [value]="type">{{ type }}</option>
-            }
-        </select>
-    </ng-container>
+    <br>
+    <select [(ngModel)]="selectedPitcherId" (change)="onPitcherSelect(selectedPitcherId)" 
+            [disabled]="!selectedTeamCode">
+        <option [ngValue]="null" disabled>Select Pitcher</option>
+        <option *ngFor="let pitcher of (availablePitchers$ | async)" [ngValue]="pitcher.id">
+            {{ pitcher.name }}
+        </option>
+    </select>
 </div>
 
 <hr>
 
 <div *ngIf="chartData" class="chart-container">
     <h2>Trajectory Visualization</h2>
-    <div #chartContainer id="trajectory-chart">
-    </div>
+    <app-trajectory-chart 
+        [chartData]="chartData">
+    </app-trajectory-chart>
 </div>
 
 <div *ngIf="!chartData && selectedPitcherId" class="message">
